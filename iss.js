@@ -22,6 +22,7 @@ const fetchMyIP = function(callback) {
   });
 };
 
+
 // This func gets the latitude
 const fetchCoordsByIP = (ip, callback) => {
   const website = "https://ipvigilante.com/" + ip;
@@ -33,7 +34,7 @@ const fetchCoordsByIP = (ip, callback) => {
     if (data.errors) {
       const errCode = data.errors[0].code;
 
-      callback(`It didn\'t work! Error: Status Code ${errCode} when fetching Coordinates for IP: ${body}`, null);
+      callback(`It didn't work! Error: Status Code ${errCode} when fetching Coordinates for IP: ${body}`, null);
       
       return;
     }
@@ -49,5 +50,26 @@ const fetchCoordsByIP = (ip, callback) => {
 };
 
 
-module.exports = { fetchMyIP, fetchCoordsByIP};
+const fetchISSFlyOverTimes = function(coords, callback) {
+  // ...
+  const website = `http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`;
+
+  request(website,(error, response, body) => {
+
+    const data = JSON.parse(body);
+
+    if (data.message === "failure") {
+      callback(`It didn't work! Error:${body}`, null);
+      return;
+    }
+    
+    const flyOverTime = data["response"];
+    console.log(flyOverTime);
+    callback(null, flyOverTime);
+
+  });
+};
+
+
+module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes};
 
